@@ -147,8 +147,68 @@
       jQueryCustom = jQueryCustom.noConflict();
       
       (function($, w, undefined) {
+        var dataDir = './data/';
+        var imagesDir = './images/';
         
+        // Model for question
+        var Question = Backbone.Model.extend({
+          initialize: function() {
+          }
+        });
         
+        // Collection test
+        var Test = Backbone.Collection.extend({
+          model: Question,
+          
+          initialize: function(models, options) {
+          }
+        });
+        
+        // View for single question
+        var QuestionView = Backbone.View.extend({
+          initialize: function() {
+          },
+          
+          render: function() {
+          }
+        });
+        
+        // View for test
+        var TestView = Backbone.View.extend({
+          initialize: function() {
+          },
+          
+          render: function() {
+          }
+        });
+        
+        // Main router and workspace for actions
+        var Workspace = Backbone.Router.extend({
+          isAutoRefreshOn: false,
+          
+          routes: {
+            'start': 'startTest',
+            'finish': 'finishTest',
+            'question/:question': 'showQuestion',
+            '*default': 'defaultRoute'
+          },
+        
+          initialize: function() {
+          },
+        
+          defaultRoute: function() {
+            this.navigate('/start', { trigger: true, replace: true });
+          }
+        });
+
+        
+          
+        // When ready, make the magic happen
+        $(document).ready(function() {
+          // Start application
+          var workspace = new Workspace();
+          Backbone.history.start();
+        });
       })(jQueryCustom, window);
     </script>
   </div>
