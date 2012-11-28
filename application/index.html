@@ -129,9 +129,16 @@
     <script id="template-test-container" type="text/template">
       <div class="test-container">
         <h3>Test</h3>
-        <div class="test-status"></div>
-        
+        <div class="test-status-container"></div>
         <div class="question-container"></div>
+      </div>
+    </script>
+    
+    <script id="template-test-status" type="text/template">
+      <div class="test-status">
+        <% for (var c in collection) { %>
+          <a href="#question/<%= collection[c].question %>"><%= collection[c].question %></a>
+        <% } %>
       </div>
     </script>
     
@@ -216,7 +223,9 @@
           template: $('#template-test-container').html(),
           templateStart: $('#template-test-start').html(),
           templateFinish: $('#template-test-finish').html(),
+          templateStatus: $('#template-test-status').html(),
           elQuestion: '.question-container',
+          elStatus: '.test-status-container',
           
           initialize: function() {
             this.collection.bind('change', this.render, this);
@@ -230,6 +239,9 @@
             if (!this.rendered) {
               $(this.el).html(_.template(this.template, {}));
             }
+            $(this.elStatus).html(_.template(this.templateStatus, {
+              collection: this.collection.toJSON()
+            }));
             
             this.rendered = true;
             return this;
@@ -291,8 +303,6 @@
         // When ready, make the magic happen
         $(document).ready(function() {
           $.getJSON(dataDir + 'questions.json', function(data) {
-            data = _.sortBy(data, 'question');
-            
             // Start application
             var workspace = new Workspace({ questions: data });
             Backbone.history.start();
