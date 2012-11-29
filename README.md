@@ -9,12 +9,6 @@ A quiz interface for the MN GRAD math test.  Sample test from: http://www.mnstat
 
 ## Data processing
 
-First convert to JSON
+First convert to JSON, then make a JSONP file.
 
-  csvjson application/data/questions.csv > application/data/questions.json```
-
-Then to JSONP for hosting remotely
-
-   echo "grad_callback(" > application/data/questions.jsonp && \
-   cat application/data/questions.json >> application/data/questions.jsonp && \
-   echo ");" >> application/data/questions.jsonp;
+  csvjson application/data/questions.csv > application/data/questions.json; echo "grad_callback(" > application/data/questions.jsonp && cat application/data/questions.json >> application/data/questions.jsonp && echo ");" >> application/data/questions.jsonp;
