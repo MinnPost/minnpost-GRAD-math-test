@@ -18,14 +18,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
 
 
-  <link type="text/css" rel="stylesheet" media="all" href="http://www.minnpost.com/sites/default/files/css/css_821e22b02514b6df405432d971d85dea.css" />
+  <link type="text/css" rel="stylesheet" media="all" href="http://www.minnpost.com/sites/default/files/css/css_cc2732a55db9703697ac738883d915c9.css" />
 <link type="text/css" rel="stylesheet" media="screen" href="http://www.minnpost.com/sites/default/files/css/css_b26ad2d81bc74f1246e9c9a4c45ecdea.css" />
 <link type="text/css" rel="stylesheet" media="print" href="http://www.minnpost.com/sites/default/files/css/css_cd72d16d00ebb27825710d934e28fbe8.css" />
   <!--[if IE]>
       <link rel="stylesheet" href="http://www.minnpost.com/sites/default/themes/derma/inc/css/ie.css?n" type="text/css">
   <![endif]-->
-    <script type="text/javascript" src="http://www.minnpost.com/sites/default/files/js/js_de97366bf2ae2bb44590e7cf73e2a6d6.js"></script>
-<script type="text/javascript" src="http://www.minnpost.com/sites/all/libraries/tinymce/jscripts/tiny_mce/tiny_mce.js?n"></script>
+    <script type="text/javascript" src="http://www.minnpost.com/sites/default/files/js/js_ecc28eff7a7d5d5580a845c7f68983c9.js"></script>
     
 
 </head>
@@ -77,6 +76,36 @@
         line-height: 100%;
       }
       
+      .test-status {
+        margin-bottom: 1em;
+      }
+      .test-status a {
+        display: block;
+        float: left;
+        width: 2em;
+        height: 2em;
+        margin: 0 .25em 0.25em 0;
+        border: 1px solid #BDBDBD;
+        text-align: center;
+        font-weight: bold;
+      }
+      .test-status a.correct {
+        border-color: green;
+      }
+      .test-status a.incorrect {
+        border-color: red;
+      }
+      .test-status a.selected {
+        background-color: #CDCDCD;
+      }
+      
+      .question-image {
+        max-width: 40%;
+        float: left;
+        margin: 0 1em 1em 0;
+        display: block;
+      }
+      
       /**
        * Responsive creen size styles
        */
@@ -118,7 +147,7 @@
           <img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-2012-election-state-leg-change/images/2011-2013-leg-change.jpeg" />
       <![endif]-->
       
-      <div id="application-container">
+      <div id="application-container" class="clear-block">
       </div>
       
       <p class="footnote"> <a href="http://www.leg.state.mn.us/" target="_blank">MN State Legislature</a>.</p>
@@ -135,35 +164,56 @@
     </script>
     
     <script id="template-test-status" type="text/template">
-      <div class="test-status">
+      <div class="test-status clear-block">
         <% for (var c in collection) { %>
-          <a href="#question/<%= collection[c].question %>"><%= collection[c].question %></a>
+          <% var correctClass= (_.isUndefined(collection[c].correct)) ? 'unanswered' :
+            ((collection[c].correct == true) ? 'correct' : 'incorrect'); %>
+          <a class="<%= correctClass %> question-<%= collection[c].question %>" href="#question/<%= collection[c].question %>"><%= collection[c].question %></a>
         <% } %>
       </div>
     </script>
     
     <script id="template-test-start" type="text/template">
       <div class="test-start">
-        Let's begin
+        <h1><a href="#question/1">Start!</a></h1>
       </div>
     </script>
     
     <script id="template-test-finish" type="text/template">
       <div class="test-finish">
-        Yay!
+        <h1>Yay!</h1>
+        <a href="#question/22">Back</a>
       </div>
     </script>
     
     <script id="template-question" type="text/template">
       <div class="question">
         <h4>Question <%= question %></h4>
+        
+        <% if (question_image.indexOf('.png') > 0) { %>
+          <img class="question-image" src="<%= question_image %>" />
+        <% } %>
         <p><%= content %></p>
-        <ul>
-          <li><%= answer_a %></li>
-          <li><%= answer_b %></li>
-          <li><%= answer_c %></li>
-          <li><%= answer_d %></li>
-        </ul>
+        
+        <form class="question-answer-form">
+          <% for (var a in answers) { %>
+            <div>
+              <input type="radio" id="question-<%= a %>" name="question-answer-input" value="<%= a %>" />
+              <label for="question-<%= a %>">
+                <% if (answers[a].indexOf('.png') > 0) { %>
+                  <img class="answer-image" src="<%= answers[a] %>" />
+                <% } else { %>
+                  <%= answers[a] %>
+                <% } %>
+              </label>
+            </div>
+          <% } %>
+          
+          <div class="question-navigation">
+            <input class="navigation-back" type="submit" value="Back" />
+            <input class="navigation-next" type="submit" value="Next" />
+          </div>
+        </form>
       </div>
     </script>
     
@@ -186,6 +236,7 @@
     <script type="text/javascript">
       // Handle custom jQuery
       jQueryCustom = jQueryCustom.noConflict();
+      Backbone.setDomLibrary(jQueryCustom);
       
       (function($, w, undefined) {
         var dataDir = './data/';
@@ -196,7 +247,23 @@
           idAttribute: 'question',
 
           initialize: function() {
-            this.set('imagesDir', imagesDir);
+            this.set('answers', {
+              'A': this.checkAnswerImage('answer_a'),
+              'B': this.checkAnswerImage('answer_b'),
+              'C': this.checkAnswerImage('answer_c'),
+              'D': this.checkAnswerImage('answer_d'),
+            });
+            this.set('question_image', imagesDir + this.get('question_image'));
+          },
+          
+          checkAnswerImage: function(prop) {
+            return this.get(prop).indexOf('.png') > 0 ?
+              imagesDir + this.get(prop) : this.get(prop)
+          },
+          
+          handleAnswer: function(answer) {
+            this.set('answer', answer);
+            this.set('correct', (answer == this.get('correct_answer')));
           }
         });
         
@@ -209,12 +276,42 @@
         var QuestionView = Backbone.View.extend({
           template: $('#template-question').html(),
           
-          initialize: function() {
+          events: {
+            'click .navigation-back': 'questionSubmit',
+            'click .navigation-next': 'questionSubmit'
+          },
+          
+          initialize: function(options) {
           },
           
           render: function() {
             $(this.el).html(_.template(this.template, this.model.toJSON()));
+            this.selectQuestion();
             return this;
+          },
+          
+          selectQuestion: function() {
+            $('.test-status a').removeClass('selected');
+            $('.test-status a.question-' + this.model.get('question')).addClass('selected');
+          },
+          
+          questionSubmit: function(e) {
+            e.preventDefault();
+            var $target = $(e.target);
+            var answer = $('input[name=question-answer-input]:checked').val();
+            var index = this.model.id;
+            var routerOptions = { trigger: true };
+
+            if (!_.isUndefined(answer)) {
+              this.model.handleAnswer(answer);
+            }
+
+            if ($target.val() == 'Next') {
+              this.options.router.navigate('question/' + (parseInt(index) + 1), routerOptions);
+            }
+            else {
+              this.options.router.navigate('question/' + (parseInt(index) - 1), routerOptions);
+            }
           }
         });
         
@@ -273,7 +370,8 @@
             this.test = new Test(options.questions);
             this.testView = new TestView({ 
               el: '#application-container', 
-              collection: this.test
+              collection: this.test,
+              router: this
             }).render();
           },
         
@@ -290,11 +388,16 @@
           },
         
           showQuestion: function(question) {
+            if (_.isUndefined(this.questionView)) {
+              this.questionView = new QuestionView({ 
+                el: this.testView.elQuestion,
+                router: this
+              });
+            }
+            
             this.currentQuestion = this.test.get(question);
-            this.questionView = new QuestionView({ 
-              el: this.testView.elQuestion,
-              model: this.currentQuestion
-            }).render();
+            this.questionView.model = this.currentQuestion;
+            this.questionView.render();
           }
         });
 
