@@ -194,6 +194,12 @@
     
     
     <!-- Templates to be used in client side processing. -->
+    <script id="template-loading" type="text/template">
+      <div class="loading-general-container">
+        <div class="loading-general"><span>Loading...</span></div>
+      </div>
+    </script>
+    
     <script id="template-test-container" type="text/template">
       <div class="test-container">
         <h3>Test</h3>
@@ -457,6 +463,8 @@
           
         // When ready, make the magic happen
         $(document).ready(function() {
+          $('#application-container').html($('#template-loading').html());
+
           window.grad_callback = function(data) {
             // Start application
             var workspace = new Workspace({ questions: data });
