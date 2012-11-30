@@ -140,6 +140,9 @@
         float: left;
         margin: 2em .25em 0 0;
       }
+      .question-answer-form label.correct-answer {
+        background-color: green;
+      }
       
       .question-navigation {
         margin: 1em 0;
@@ -298,6 +301,10 @@
       <div class="question">
         <h4>Question <%= question %></h4>
         
+        <% if (typeof answer != 'undefined') { %>
+          <h5>You have already answered this question.</h5>
+        <% } %>
+        
         <% if (question_image.indexOf('.png') > 0) { %>
           <img class="question-image" src="<%= question_image %>" />
         <% } %>
@@ -307,8 +314,15 @@
           <div class="question-answer-radios clear-block">
             <% for (var a in answers) { %>
               <div class="question-answer-radio <% if (answers[a].indexOf('.png') > 0) { %>answer-image<% } %>">
-                <input type="radio" id="question-<%= a %>" name="question-answer-input" value="<%= a %>" />
-                <label for="question-<%= a %>">
+                <input 
+                  type="radio" 
+                  id="question-<%= a %>" 
+                  name="question-answer-input" 
+                  value="<%= a %>" 
+                  <% if (typeof answer != 'undefined' && a == answer) { %>checked="true"<% } %> 
+                  <% if (typeof answer != 'undefined') { %>disabled="true"<% } %> 
+                />
+                <label for="question-<%= a %>" class="<% if (typeof answer != 'undefined' && a == correct_answer) { %>correct-answer<% } %>">
                   <% if (answers[a].indexOf('.png') > 0) { %>
                     <img class="answer-image" src="<%= answers[a] %>" />
                   <% } else { %>
