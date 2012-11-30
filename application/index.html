@@ -192,13 +192,16 @@
       
       .question-navigation {
         margin: 1em 0;
-        background-color: #EBEBEB;
-        border-top: 1px solid #ABABAB;
         padding: 1em 2em;
         text-align: right;
       }
-      .question-navigation .navigation-back {
-        float: left;
+      .question-navigation input {
+        background-color: #2595E4;
+        color: #FFFFFF;
+        padding: .3333em .6666em;
+        margin: 0 1em 0 0;
+        border: none;
+        border-radius: 3px;
       }
       .question-navigation a {
         font-size: 1,5em;
@@ -415,8 +418,8 @@
           </div>
           
           <div class="question-navigation">
-            <input class="navigation-back" type="submit" value="Back" />
-            <input class="navigation-next" type="submit" value="Next" />
+            <input class="navigation-back" type="submit" value="Submit and show answer" />
+            <input class="navigation-next" type="submit" value="Next question" />
           </div>
         </form>
       </div>
@@ -546,13 +549,16 @@
               this.options.router.navigate('start', routerOptions);
             }
             else if ((parseInt(index) >= totalCount) && $target.val() == 'Next') {
-              this.options.router.navigate('finish', routerOptions);
+              //this.options.router.navigate('finish', routerOptions);
             }
-            else if ($target.val() == 'Next') {
+            else if ($target.val() == 'Next question') {
               this.options.router.navigate('question/' + (parseInt(index) + 1), routerOptions);
             }
-            else {
+            else if ($target.val() == 'Back') {
               this.options.router.navigate('question/' + (parseInt(index) - 1), routerOptions);
+            }
+            else if ($target.val() == 'Submit and show answer') {
+              this.render();
             }
           }
         });
