@@ -36,7 +36,7 @@
   <!-- START: Embeddable -->
   <div class="node-body fieldlayout node-field-body">
     <style type="text/css">
-      /* @import url(''); */
+      @import url('https://s3.amazonaws.com/data.minnpost/js/fancybox-2.1.2/jquery.fancybox.css');
     </style>
     
     <style type="text/css">
@@ -74,6 +74,14 @@
         vertical-align: middle;
         height: 100%;
         line-height: 100%;
+      }
+      
+      .test-helpers {
+        text-align: right;
+        margin-bottom: 1em;
+      }
+      .test-helpers img {
+        width: 20px;
       }
       
       .test-status {
@@ -189,7 +197,7 @@
       <div id="application-container" class="clear-block">
       </div>
       
-      <p class="footnote"> <a href="http://www.leg.state.mn.us/" target="_blank">MN State Legislature</a>.</p>
+      <p class="footnote"> <a href="http://www.leg.state.mn.us/" target="_blank">MN State Legislature</a>.  <a href="http://thenounproject.com/noun/calculator/#icon-No804" target="_blank">Calculator</a> designed by <a href="http://thenounproject.com/iconify" target="_blank">Scott Lewis</a> from The Noun Project</p>
     </div>
     
     
@@ -204,6 +212,12 @@
       <div class="test-container">
         <h3>Test</h3>
         <div class="test-status-container"></div>
+        
+        <div class="test-helpers">
+          <a href="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/MathFormulaSheet_GRAD_acc.png" class="equations" title="Equation sheet as provided on the sample GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_1050.png" alt="Drafting icon" /></a>
+          <a href="https://mnpt.tds.airast.org/student/Scripts/Calculator/TDSCalculator.aspx?mode=Scientific,Graphing" data-fancybox-type="iframe" class="calculator" title="Graphing and scientific calculator provided for the online GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_804.png" alt="Calculator icon" /></a>
+        </div>
+        
         <div class="question-container"></div>
       </div>
     </script>
@@ -281,6 +295,7 @@
     <script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/underscore-1.3.3/underscore-min.js"></script>
     <script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/jquery-custom-master-20120606/jquery-1.7.2.custom.min.js"></script>
     <script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/backbone-0.9.2/backbone-min.js"></script>
+    <script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/fancybox-2.1.2/jquerycustom.fancybox.pack.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     
@@ -397,6 +412,13 @@
             $(this.elStatus).html(_.template(this.templateStatus, {
               collection: this.collection.toJSON()
             }));
+            
+            // Fancy box modals
+            $('.calculator').fancybox({ });
+            $('.equations').fancybox({
+              fitToView: false,
+              maxWidth: '90%'
+            });
             
             this.rendered = true;
             return this;
