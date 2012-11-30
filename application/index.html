@@ -76,40 +76,62 @@
         line-height: 100%;
       }
       
+      /** Green: 35E425  Red: E42535  Blue: 2595E4 **/
+      
       .test-start a img {
         width: 20px;
       }
       
-      .test-helpers {
-        text-align: right;
-        margin-bottom: 1em;
-      }
-      .test-helpers img {
-        width: 20px;
-      }
       
-      .test-status {
-        margin-bottom: 1em;
-      }
-      .test-status a {
-        display: block;
-        float: left;
-        width: 1.75em;
-        padding: .25em 0;
-        margin: 0 .25em 0.25em 0;
-        border: 1px solid #BDBDBD;
+      .test-total-tools {
+        margin-bottom: 2em;
         text-align: center;
+      }
+      .test-total-tools .test-total-label,
+      .test-total-tools .test-helpers-label {
+        font-weight: bold;
+        padding-right: .5em;
+        text-transform: uppercase;
+        font-family: NimbusSanNovConD,Helvetica,Arial,Geneva,sans-serif;
+      }
+      .test-total-tools .test-total {
+        padding-right: 3em;
         font-weight: bold;
         font-family: NimbusSanNovConD,Helvetica,Arial,Geneva,sans-serif;
       }
+      .test-total-tools .test-total .test-total-correct {
+        color: #35E425;
+      }
+      .test-total-tools .test-helpers a {
+        color: #1A1818;
+        padding-right: 1em;
+      }
+      .test-total-tools .test-helpers img {
+        width: 20px;
+        padding-right: .5em;
+        vertical-align: middle;
+      }
+      
+      .test-status {
+        margin-bottom: 2em;
+        text-align: center;
+      }
+      .test-status a {
+        padding: .25em .25em;
+        margin: 0 .15em;
+        border-top: 3px solid transparent;
+        text-align: center;
+        font-family: NimbusSanNovConD,Helvetica,Arial,Geneva,sans-serif;
+        color: #8B8B8B;
+      }
       .test-status a.correct {
-        border-color: green;
+        border-color: #35E425; 
       }
       .test-status a.incorrect {
-        border-color: red;
+        border-color: #E42535;
       }
       .test-status a.selected {
-        background-color: #CDCDCD;
+        border-bottom: 1px solid #BCBCBC;
       }
       .test-status a.test-status-start,
       .test-status a.test-status-finish {
@@ -222,12 +244,23 @@
     
     <script id="template-test-container" type="text/template">
       <div class="test-container">
-        <h3>Test</h3>
+        <div class="test-total-tools">
+          <span class="test-total-label">Your score</span>
+          <span class="test-total">
+            <span class="test-total-correct"></span> /
+            <span class="test-total-total"></span>
+          </span>
+          
+          <span class="test-helpers-label">Study aids</span>
+          <span class="test-helpers">
+            <a href="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/MathFormulaSheet_GRAD_acc.png" class="equations" title="Equation sheet as provided on the sample GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_1050.png" alt="Drafting icon" />Formula sheet</a>
+          <a href="https://mnpt.tds.airast.org/student/Scripts/Calculator/TDSCalculator.aspx?mode=Scientific,Graphing" data-fancybox-type="iframe" class="calculator" title="Graphing and scientific calculator provided for the online GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_804.png" alt="Calculator icon" />Calculator</a>
+          </span>
+        </div>
         <div class="test-status-container"></div>
         
         <div class="test-helpers">
-          <a href="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/MathFormulaSheet_GRAD_acc.png" class="equations" title="Equation sheet as provided on the sample GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_1050.png" alt="Drafting icon" /></a>
-          <a href="https://mnpt.tds.airast.org/student/Scripts/Calculator/TDSCalculator.aspx?mode=Scientific,Graphing" data-fancybox-type="iframe" class="calculator" title="Graphing and scientific calculator provided for the online GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_804.png" alt="Calculator icon" /></a>
+          
         </div>
         
         <div class="question-container"></div>
@@ -482,6 +515,8 @@
           },
           
           render: function() {
+            this.collection.updateCounts();
+          
             // Mark as rendered first time around.
             this.rendered = this.rendered || false;
 
@@ -492,6 +527,10 @@
             $(this.elStatus).html(_.template(this.templateStatus, {
               collection: this.collection.toJSON()
             }));
+            
+            // Totals
+            $('.test-total-correct').html(this.collection.counts.totalCorrect);
+            $('.test-total-total').html(this.collection.counts.totalCount);
             
             // Fancy box modals
             $('.calculator').fancybox({ });
