@@ -117,12 +117,15 @@
         text-align: center;
       }
       .test-status a {
-        padding: .25em .25em;
+        padding: .25em .333333em;
         margin: 0 .15em;
         border-top: 3px solid transparent;
         text-align: center;
         font-family: NimbusSanNovConD,Helvetica,Arial,Geneva,sans-serif;
         color: #8B8B8B;
+      }
+      .test-status a:hover {
+        text-decoration: none;
       }
       .test-status a.correct {
         border-color: #35E425; 
@@ -132,10 +135,6 @@
       }
       .test-status a.selected {
         border-bottom: 1px solid #BCBCBC;
-      }
-      .test-status a.test-status-start,
-      .test-status a.test-status-finish {
-        width: 4em;
       }
       
       .question-image {
@@ -259,17 +258,13 @@
         </div>
         <div class="test-status-container"></div>
         
-        <div class="test-helpers">
-          
-        </div>
-        
         <div class="question-container"></div>
       </div>
     </script>
     
     <script id="template-test-status" type="text/template">
       <div class="test-status clear-block">
-        <a class="test-status-start" href="#start">Start</a>
+        <a class="test-status-prev" href="#start">&lt;</a>
       
         <% for (var c in collection) { %>
           <% var correctClass= (_.isUndefined(collection[c].correct)) ? 'unanswered' :
@@ -277,7 +272,7 @@
           <a class="<%= correctClass %> question-<%= collection[c].question %>" href="#question/<%= collection[c].question %>"><%= collection[c].question %></a>
         <% } %>
         
-        <a class="test-status-finish" href="#finish">Finish</a>
+        <a class="test-status-next" href="#question/1">&gt;</a>
       </div>
     </script>
     
@@ -463,7 +458,7 @@
           
           render: function() {
             $(this.el).html(_.template(this.template, this.model.toJSON()));
-            this.selectQuestion();
+            this.selectQuestion().updateNav();
             MathJax.Hub.Typeset();
             return this;
           },
@@ -471,6 +466,14 @@
           selectQuestion: function() {
             $('.test-status a').removeClass('selected');
             $('.test-status a.question-' + this.model.get('question')).addClass('selected');
+            return this;
+          },
+          
+          updateNav: function() {
+            var index = this.model.id;
+            $('.test-status-prev').attr('href', '#question/' + (parseInt(index) - 1));
+            $('.test-status-next').attr('href', '#question/' + (parseInt(index) + 1));
+            return this;
           },
           
           questionSubmit: function(e) {
@@ -547,19 +550,8 @@
             $(this.elQuestion).html(_.template(this.templateStart, {}));
             $('.test-status a').removeClass('selected');
             $('.test-status a.test-status-start').addClass('selected');
-            return this;
-          },
-          
-          renderFinish: function() {
-            this.collection.updateCounts();
-            var data = {
-              collection: this.collection.toJSON(),
-              counts: this.collection.counts
-            }
-          
-            $(this.elQuestion).html(_.template(this.templateFinish, data));
-            $('.test-status a').removeClass('selected');
-            $('.test-status a.test-status-finish').addClass('selected');
+            $('.test-status-prev').attr('href', '#start');
+            $('.test-status-next').attr('href', '#question/1');
             return this;
           }
         });
@@ -570,7 +562,6 @@
           
           routes: {
             'start': 'startTest',
-            'finish': 'finishTest',
             'question/:question': 'showQuestion',
             '*default': 'defaultRoute'
           },
@@ -589,11 +580,8 @@
           },
         
           startTest: function() {
+            this.currentQuestion = undefined;
             this.testView.renderStart();
-          },
-        
-          finishTest: function() {
-            this.testView.renderFinish();
           },
         
           showQuestion: function(question) {
@@ -602,6 +590,12 @@
                 el: this.testView.elQuestion,
                 router: this
               });
+            }
+            
+            // Handle bad values
+            if (parseInt(question) <= 0 || parseInt(question) > this.test.length) {
+              this.navigate('/start', { trigger: true, replace: true });
+              return;
             }
             
             this.currentQuestion = this.test.get(question);
