@@ -76,6 +76,15 @@
         line-height: 100%;
       }
       
+      .test-start .question-navigation a {
+        font-size: 1,5em;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .test-start a img {
+        width: 20px;
+      }
+      
       .test-helpers {
         text-align: right;
         margin-bottom: 1em;
@@ -238,7 +247,35 @@
     
     <script id="template-test-start" type="text/template">
       <div class="test-start">
-        <h1><a href="#question/1">Start!</a></h1>
+        <h3>From the test</h3>
+        <h4>Graduation-Required Assessment for Diploma (GRAD) General Directions</h4>
+
+        <ul>
+          <li>You are now going to take the Minnesota Graduation-Required Assessment for Diploma (GRAD).</li>
+          <li>All students who first entered grade 8 in 2005-2006 or later are required to 
+          meet the GRAD requirements in order to receive a diploma from a Minnesota 
+          public high school.</li>
+          <li>If you are taking the reading test, read each passage.</li>
+          <li>You must answer each question.</li>
+          <li>You may take notes and highlight in your test book.</li>
+          <li>You may write in this test book or use scratch paper. All answers must be marked in this test book.</li>
+          <li>When you finish the test, stop and check your answers.</li>
+          <li>Turn the page to begin the GRAD test.</li>
+        </ul>
+        
+        <h3>Taking this test</h3>
+        
+        <ul>
+          <li>You may only answer a question once (we will tell you write away if you got it correct).</li>
+          <li>There is no time limit.</li>
+          <li>We do not save your results, so don't close the page until you are done.</li>
+          <li>Use the <a href="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/MathFormulaSheet_GRAD_acc.png" class="equations" title="Equation sheet as provided on the sample GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_1050.png" alt="Drafting icon" /></a> formula icon to see helpful formulas as provided on the normal GRAD test.</li>
+          <li>Use the <a href="https://mnpt.tds.airast.org/student/Scripts/Calculator/TDSCalculator.aspx?mode=Scientific,Graphing" data-fancybox-type="iframe" class="calculator" title="Graphing and scientific calculator provided for the online GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_804.png" alt="Calculator icon" /></a> calculator icon to use a graphing and scientific calculator during the test.</li>
+        </ul>
+      
+        <div class="question-navigation">
+          <a href="#question/1">Start!</a>
+        </div>
       </div>
     </script>
     
@@ -275,7 +312,9 @@
           </div>
           
           <div class="question-navigation">
-            <input class="navigation-back" type="submit" value="Back" />
+            <% if (parseInt(question) > 1) { %>
+              <input class="navigation-back" type="submit" value="Back" />
+            <% } %>
             <input class="navigation-next" type="submit" value="Next" />
           </div>
         </form>
@@ -426,11 +465,15 @@
           
           renderStart: function() {
             $(this.elQuestion).html(_.template(this.templateStart, {}));
+            $('.test-status a').removeClass('selected');
+            $('.test-status a.test-status-start').addClass('selected');
             return this;
           },
           
           renderFinish: function() {
             $(this.elQuestion).html(_.template(this.templateFinish, {}));
+            $('.test-status a').removeClass('selected');
+            $('.test-status a.test-status-finish').addClass('selected');
             return this;
           }
         });
