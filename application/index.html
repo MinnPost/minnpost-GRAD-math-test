@@ -76,11 +76,6 @@
         line-height: 100%;
       }
       
-      .test-start .question-navigation a {
-        font-size: 1,5em;
-        font-weight: bold;
-        text-transform: uppercase;
-      }
       .test-start a img {
         width: 20px;
       }
@@ -155,6 +150,11 @@
       }
       .question-navigation .navigation-back {
         float: left;
+      }
+      .question-navigation a {
+        font-size: 1,5em;
+        font-weight: bold;
+        text-transform: uppercase;
       }
       
       .MathJax {
@@ -282,6 +282,14 @@
     <script id="template-test-finish" type="text/template">
       <div class="test-finish">
         <h1>Yay!</h1>
+        
+        <table>
+          <tr><td>Unanswered</td><td><%= counts.totalUnanswered %></td></tr>
+          <tr><td>Correct</td><td><%= counts.totalCorrect %></td></tr>
+          <tr><td>Incorrect</td><td><%= counts.totalIncorrect %></td></tr>
+          <tr><td>Score</td><td><%= (counts.totalCorrect / counts.totalCount ) %></td></tr>
+        </table>
+        
         <a href="#question/22">Back</a>
       </div>
     </script>
@@ -312,9 +320,7 @@
           </div>
           
           <div class="question-navigation">
-            <% if (parseInt(question) > 1) { %>
-              <input class="navigation-back" type="submit" value="Back" />
-            <% } %>
+            <input class="navigation-back" type="submit" value="Back" />
             <input class="navigation-next" type="submit" value="Next" />
           </div>
         </form>
@@ -380,7 +386,20 @@
         
         // Collection test
         var Test = Backbone.Collection.extend({
-          model: Question
+          model: Question,
+          
+          initialize: function() {
+            this.updateCounts();
+            this.bind('change:answer', this.updateCounts, this);
+          },
+          
+          updateCounts: function() {
+            this.counts = this.count || {};
+            this.counts.totalCount = this.length;
+            this.counts.totalCorrect = this.where({ correct: true }).length;
+            this.counts.totalIncorrect = this.where({ correct: false }).length;
+            this.counts.totalUnanswered = this.where({ correct: undefined }).length;
+          }
         });
         
         // View for single question
@@ -413,12 +432,20 @@
             var answer = $('input[name=question-answer-input]:checked').val();
             var index = this.model.id;
             var routerOptions = { trigger: true };
+            var totalCount = this.model.collection.length;
 
             if (!_.isUndefined(answer)) {
               this.model.handleAnswer(answer);
             }
 
-            if ($target.val() == 'Next') {
+            // Handle navigation
+            if ((parseInt(index) <= 1) && $target.val() == 'Back') {
+              this.options.router.navigate('start', routerOptions);
+            }
+            else if ((parseInt(index) >= totalCount) && $target.val() == 'Next') {
+              this.options.router.navigate('finish', routerOptions);
+            }
+            else if ($target.val() == 'Next') {
               this.options.router.navigate('question/' + (parseInt(index) + 1), routerOptions);
             }
             else {
@@ -471,7 +498,13 @@
           },
           
           renderFinish: function() {
-            $(this.elQuestion).html(_.template(this.templateFinish, {}));
+            this.collection.updateCounts();
+            var data = {
+              collection: this.collection.toJSON(),
+              counts: this.collection.counts
+            }
+          
+            $(this.elQuestion).html(_.template(this.templateFinish, data));
             $('.test-status a').removeClass('selected');
             $('.test-status a.test-status-finish').addClass('selected');
             return this;
