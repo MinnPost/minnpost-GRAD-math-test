@@ -145,7 +145,7 @@
       }
       
       .question-answer-form .question-answer-radio input {
-        margin: 0 .5em .5em 1em;
+        margin: 0 .5em .5em 0;
       }
       .question-answer-form .question-answer-radio label img {
         max-width: 80%;
@@ -161,8 +161,33 @@
         float: left;
         margin: 2em .25em 0 0;
       }
-      .question-answer-form label.correct-answer {
-        background-color: green;
+      
+      .question-answer-form .question-answer-icon-container {
+        width: 14px;
+        margin-right: .25em;
+        display: inline-block;
+        zoom:1;
+        *display:inline;
+      }
+      .question-answer-form .question-answer-icon-container .question-answer-icon-correct,
+      .question-answer-form .question-answer-icon-container .question-answer-icon-incorrect {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        margin-top: 1px;
+        line-height: 14px;
+        vertical-align: text-top;
+        background-repeat: no-repeat;
+        zoom:1;
+        *display:inline;
+      }
+      .question-answer-form .question-answer-icon-container .question-answer-icon-correct {
+        background-image: url("https://s3.amazonaws.com/data.minnpost/js/bootstrap-2.0.3/img/glyphicons-halflings-light-green-35E425.png");
+        background-position: -288px 0;
+      }
+      .question-answer-form .question-answer-icon-container .question-answer-icon-incorrect {
+        background-image: url("https://s3.amazonaws.com/data.minnpost/js/bootstrap-2.0.3/img/glyphicons-halflings-light-red-E42535.png");
+        background-position: -312px 0;
       }
       
       .question-navigation {
@@ -179,6 +204,18 @@
         font-size: 1,5em;
         font-weight: bold;
         text-transform: uppercase;
+      }
+      
+      .question .answer-correct,
+      .question .answer-incorrect {
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+      .question .answer-correct {
+        color: #35E425; 
+      }
+      .question .answer-incorrect {
+        color: #E42535;
       }
       
       .MathJax {
@@ -329,19 +366,34 @@
       <div class="question">
         <h4>Question <%= question %></h4>
         
-        <% if (typeof answer != 'undefined') { %>
-          <h5>You have already answered this question.</h5>
-        <% } %>
-        
         <% if (question_image.indexOf('.png') > 0) { %>
           <img class="question-image" src="<%= question_image %>" />
         <% } %>
-        <p><%= content %></p>
+        <p>
+          <%= content %>
+          <% if (typeof answer != 'undefined') { %>
+            <% if (correct === true) { %>
+              <span class="answer-correct">Correct</span>
+            <% } else { %>
+              <span class="answer-incorrect">Incorrect</span>
+            <% } %>
+          <% } %>
+        </p>
         
         <form class="question-answer-form">
           <div class="question-answer-radios clear-block">
             <% for (var a in answers) { %>
               <div class="question-answer-radio <% if (answers[a].indexOf('.png') > 0) { %>answer-image<% } %>">
+                <span class="question-answer-icon-container">
+                  <% if (typeof answer != 'undefined') { %>
+                    <% if (a == correct_answer) { %>
+                      <span class="question-answer-icon-correct"></span>
+                    <% } else if (correct === false && a == answer) { %>
+                      <span class="question-answer-icon-incorrect"></span>
+                    <% } %>
+                  <% } %>
+                </span>
+                
                 <input 
                   type="radio" 
                   id="question-<%= a %>" 
@@ -350,6 +402,7 @@
                   <% if (typeof answer != 'undefined' && a == answer) { %>checked="true"<% } %> 
                   <% if (typeof answer != 'undefined') { %>disabled="true"<% } %> 
                 />
+                
                 <label for="question-<%= a %>" class="<% if (typeof answer != 'undefined' && a == correct_answer) { %>correct-answer<% } %>">
                   <% if (answers[a].indexOf('.png') > 0) { %>
                     <img class="answer-image" src="<%= answers[a] %>" />
