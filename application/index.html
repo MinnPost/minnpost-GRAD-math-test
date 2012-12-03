@@ -375,7 +375,7 @@
       <div class="test-finish">
         <h3>You're done!</h3>
         
-        <p class="test-score-description">You got <span class="test-score-correct"><%= counts.totalCorrect %></span> correct out of <%= counts.totalCount %>.  That's <%= (counts.totalCorrect / counts.totalCount ).toFixed(2) %>% correct.</p>
+        <p class="test-score-description">You got <span class="test-score-correct"><%= counts.totalCorrect %></span> correct out of <%= counts.totalCount %>.  That's <%= (counts.totalCorrect / counts.totalCount * 100).toFixed(2) %>% correct.</p>
                 
         <div class="test-share-facebook">
           <iframe src="//www.facebook.com/plugins/like.php?href=<%= encodeURI(document.URL) %>&amp;send=false&amp;layout=button_count&amp;width=200&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=40" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:200px; height:40px;" allowTransparency="true"></iframe>
@@ -442,9 +442,11 @@
           </div>
           
           <div class="question-navigation">
-            <input class="navigation-back" type="submit" value="Submit and show answer" />
+            <% if (typeof answer == 'undefined') { %>
+              <input class="navigation-grade" type="submit" value="Submit and show answer" />
+            <% } %>
             <%  if (parseInt(question) != limit) { %>
-              <input class="navigation-next" type="submit" value="Next question" />
+              <input class="navigation-next" type="submit" value="<% if (typeof answer == 'undefined') { %>Submit and show next question<% } else { %>Next question<% } %>" />
             <% } %>
           </div>
         </form>
@@ -532,7 +534,8 @@
           
           events: {
             'click .navigation-back': 'questionSubmit',
-            'click .navigation-next': 'questionSubmit'
+            'click .navigation-next': 'questionSubmit',
+            'click .navigation-grade': 'questionSubmit'
           },
           
           initialize: function(options) {
@@ -574,19 +577,19 @@
             }
 
             // Handle navigation
-            if ((parseInt(index) <= 1) && $target.val() == 'Back') {
+            if ((parseInt(index) <= 1) && $target.hasClass('navigation-back')) {
               this.options.router.navigate('start', routerOptions);
             }
-            else if ((parseInt(index) >= totalCount) && $target.val() == 'Next') {
+            else if ((parseInt(index) >= totalCount) && $target.hasClass('navigation-next')) {
               //this.options.router.navigate('finish', routerOptions);
             }
-            else if ($target.val() == 'Next question') {
+            else if ($target.hasClass('navigation-next')) {
               this.options.router.navigate('question/' + (parseInt(index) + 1), routerOptions);
             }
-            else if ($target.val() == 'Back') {
+            else if ($target.hasClass('navigation-back')) {
               this.options.router.navigate('question/' + (parseInt(index) - 1), routerOptions);
             }
-            else if ($target.val() == 'Submit and show answer') {
+            else if ($target.hasClass('navigation-grade')) {
               this.render();
             }
           }
