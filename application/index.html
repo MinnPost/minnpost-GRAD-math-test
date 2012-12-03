@@ -201,8 +201,15 @@
         padding: .3333em .6666em;
         margin: 0 1em 0 0;
         border: none;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px;
         border-radius: 3px;
+        cursor: pointer;
       }
+      .question-navigation.unanswered input.navigation-next {
+        opacity: .7;
+      }
+      
       .question-navigation a {
         font-size: 1,5em;
         font-weight: bold;
@@ -441,7 +448,7 @@
             <% } %>
           </div>
           
-          <div class="question-navigation">
+          <div class="question-navigation <% if (typeof answer == 'undefined') { %>unanswered<% } %>">
             <% if (typeof answer == 'undefined') { %>
               <input class="navigation-grade" type="submit" value="Submit and show answer" />
             <% } %>
