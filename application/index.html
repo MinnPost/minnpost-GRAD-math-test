@@ -675,7 +675,7 @@
             $('.test-total-total').html(this.collection.counts.totalCount);
             
             // Is the test done?
-            if (this.collection.counts.totalUnanswered == 21) {
+            if (this.collection.counts.totalUnanswered == 0) {
               $.fancybox(_.template(this.templateFinish, {
                 collection: this.collection.toJSON(),
                 counts: this.collection.counts
