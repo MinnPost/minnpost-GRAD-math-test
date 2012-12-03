@@ -236,10 +236,18 @@
       }
       .test-finish .test-score-description {
         font-size: 1.5em;
-        margin-bottom: 2em;
+        margin-bottom: .25em;
+      }
+      .test-finish .test-score-description-footnote {
+        margin-bottom: 3em;
+        color: #9B9B9B;
       }
       .test-finish .test-score-correct {
         color: #35E425;
+        font-weight: bold;
+      }
+      .test-finish .test-score-incorrect {
+        color: #E42535;
         font-weight: bold;
       }
       
@@ -391,9 +399,14 @@
     
     <script id="template-test-finish" type="text/template">
       <div class="test-finish">
-        <h3>You're done!</h3>
+        <% if ((counts.totalCorrect / counts.totalCount) >= counts.passing) { %>
+          <h3>You <span class="test-score-correct">passed</span>!</h3>
+        <% } else { %>
+          <h3>You <span class="test-score-incorrect">failed</span>.</h3>
+        <% } %>
         
         <p class="test-score-description">You got <span class="test-score-correct"><%= counts.totalCorrect %></span> correct out of <%= counts.totalCount %>.  That's <%= (counts.totalCorrect / counts.totalCount * 100).toFixed(2) %>% correct.</p>
+        <p class="test-score-description-footnote">Passing based on 2012 test scores, where 32 out of 40 (80%) was a passing grade.  Each year is weighted differently.</p>
                 
         <div class="test-share-facebook">
           <iframe src="//www.facebook.com/plugins/like.php?href=<%= encodeURI(document.URL) %>&amp;send=false&amp;layout=button_count&amp;width=200&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=40" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:200px; height:40px;" allowTransparency="true"></iframe>
@@ -542,6 +555,8 @@
           
           updateCounts: function() {
             this.counts = this.count || {};
+            
+            this.counts.passing = 0.8; // As determined from 2012 tests
             this.counts.totalCount = this.length;
             this.counts.totalCorrect = this.where({ correct: true }).length;
             this.counts.totalIncorrect = this.where({ correct: false }).length;
@@ -660,7 +675,7 @@
             $('.test-total-total').html(this.collection.counts.totalCount);
             
             // Is the test done?
-            if (this.collection.counts.totalUnanswered == 0) {
+            if (this.collection.counts.totalUnanswered == 21) {
               $.fancybox(_.template(this.templateFinish, {
                 collection: this.collection.toJSON(),
                 counts: this.collection.counts
