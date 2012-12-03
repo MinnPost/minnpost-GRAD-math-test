@@ -159,7 +159,7 @@
       }
       .question-answer-form .question-answer-radio.answer-image input {
         float: left;
-        margin: 2em .25em 0 0;
+        margin: 2em .25em 1em 0;
       }
       
       .question-answer-form .question-answer-icon-container {
@@ -208,6 +208,7 @@
       }
       .question-navigation.unanswered input.navigation-next {
         opacity: .7;
+        filter: alpha(opacity = 70);
       }
       
       .question-navigation a {
@@ -251,6 +252,8 @@
       
       .MathJax {
         display: inline-block;
+        zoom:1;
+        *display:inline;
         margin-bottom: .5em;
       }
       
@@ -273,6 +276,14 @@
       </style>
     <![endif]-->
     
+    <!--[if lte IE 8]>
+      <style type="text/css">
+        .MathJax {
+          margin-bottom: 1em;
+        }
+      </style>
+    <![endif]-->
+    
     
     <!-- Initial HTML for application -->
     <div id="minnpost-GRAD-math-test">
@@ -283,16 +294,12 @@
       <!--[if lte IE 7]>
         <div class="ie-upgrade-note">
           <h4>Consider upgrading your browser</h4>
-          <p>Your <strong>Internet Browser</strong> is the application you use to navigate webpages on the internet.  You are currently using an older version of Internet Explorer.  Unfortunately, with this old browser, you will not be able to experience the full version of this interactive story.</p>
+          <p>Your <strong>Internet Browser</strong> is the application you use to navigate webpages on the internet.  You are currently using an older version of Internet Explorer.  This website and many others will work better if you upgrade your browser.</p>
           
           <p><a href="http://browsehappy.com/" target="_blank">Click here to find out about options for newer browsers</a>.</p>
         
-          <p>If you cannot install new applications on your computer (because you are at work, for example), consider using <a href="http://www.google.com/chromeframe" target="_blank">Google's Chrome Frame</a> for Internet Explorer.</p>
+          <p>If you cannot install new applications on your computer (because it is not allowed at work, for example), consider using <a href="http://www.google.com/chromeframe" target="_blank">Google's Chrome Frame</a> for Internet Explorer.</p>
         </div>
-        
-        <div>
-          <p>The following is a snapshot of the interactive application:</p>
-          <img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-2012-election-state-leg-change/images/2011-2013-leg-change.jpeg" />
       <![endif]-->
       
       <div id="application-container" class="clear-block">
@@ -335,9 +342,11 @@
         <a class="test-status-prev" href="#start">&lt;</a>
       
         <% for (var c in collection) { %>
-          <% var correctClass= (_.isUndefined(collection[c].correct)) ? 'unanswered' :
-            ((collection[c].correct == true) ? 'correct' : 'incorrect'); %>
-          <a class="<%= correctClass %> question-<%= collection[c].question %>" href="#question/<%= collection[c].question %>"><%= collection[c].question %></a>
+          <% if (!_.isUndefined(collection[c]) && !_.isUndefined(collection[c].question)) { %>
+            <% var correctClass= (_.isUndefined(collection[c].correct)) ? 'unanswered' :
+              ((collection[c].correct == true) ? 'correct' : 'incorrect'); %>
+            <a class="<%= correctClass %> question-<%= collection[c].question %>" href="#question/<%= collection[c].question %>"><%= collection[c].question %></a>
+          <% } %>
         <% } %>
         
         <a class="test-status-next" href="#question/1">&gt;</a>
@@ -455,6 +464,9 @@
             <%  if (parseInt(question) != limit) { %>
               <input class="navigation-next" type="submit" value="<% if (typeof answer == 'undefined') { %>Submit and show next question<% } else { %>Next question<% } %>" />
             <% } %>
+            <%  if (parseInt(question) == limit && typeof answer != 'undefined') { %>
+              <input class="navigation-next" type="submit" value="See score" />
+            <% } %>
           </div>
         </form>
       </div>
@@ -501,7 +513,7 @@
               'A': this.checkAnswerImage('answer_a'),
               'B': this.checkAnswerImage('answer_b'),
               'C': this.checkAnswerImage('answer_c'),
-              'D': this.checkAnswerImage('answer_d'),
+              'D': this.checkAnswerImage('answer_d')
             });
             this.set('question_image', imagesDir + this.get('question_image'));
           },
@@ -598,6 +610,11 @@
             }
             else if ($target.hasClass('navigation-grade')) {
               this.render();
+            }
+            
+            // Do a check here to see score
+            if (this.model.collection.counts.totalUnanswered == 0 && $target.val() == 'See score') {
+              this.options.router.testView.render();
             }
           }
         });
