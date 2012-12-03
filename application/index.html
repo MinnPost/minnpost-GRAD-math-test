@@ -735,6 +735,14 @@
               });
             }
             
+            // Start over if we havent been here before
+            this.started = this.started || false;
+            if (!this.started) {
+              this.started = true;
+              this.navigate('/start', { trigger: true, replace: true });
+              return;
+            }
+            
             // Handle bad values
             if (parseInt(question) <= 0) {
               this.navigate('/start', { trigger: true, replace: true });
