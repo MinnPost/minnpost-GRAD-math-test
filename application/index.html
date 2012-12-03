@@ -134,7 +134,7 @@
         border-color: #E42535;
       }
       .test-status a.selected {
-        border-bottom: 1px solid #BCBCBC;
+        color: #1A1818;
       }
       
       .question-image {
@@ -219,6 +219,27 @@
       }
       .question .answer-incorrect {
         color: #E42535;
+      }
+      
+      .test-finish {
+        padding: 1em 2em;
+        text-align: center;
+      }
+      .test-finish h3 {
+        font-size: 2.5em;
+        margin-bottom: 1em;
+      }
+      .test-finish .test-score-description {
+        font-size: 1.5em;
+        margin-bottom: 2em;
+      }
+      .test-finish .test-score-correct {
+        color: #35E425;
+        font-weight: bold;
+      }
+      
+      .test-share-facebook {
+        margin-bottom: 1em;
       }
       
       .MathJax {
@@ -352,16 +373,19 @@
     
     <script id="template-test-finish" type="text/template">
       <div class="test-finish">
-        <h1>Yay!</h1>
+        <h3>You're done!</h3>
         
-        <table>
-          <tr><td>Unanswered</td><td><%= counts.totalUnanswered %></td></tr>
-          <tr><td>Correct</td><td><%= counts.totalCorrect %></td></tr>
-          <tr><td>Incorrect</td><td><%= counts.totalIncorrect %></td></tr>
-          <tr><td>Score</td><td><%= (counts.totalCorrect / counts.totalCount ) %></td></tr>
-        </table>
+        <p class="test-score-description">You got <span class="test-score-correct"><%= counts.totalCorrect %></span> correct out of <%= counts.totalCount %>.  That's <%= (counts.totalCorrect / counts.totalCount ).toFixed(2) %>% correct.</p>
+                
+        <div class="test-share-facebook">
+          <iframe src="//www.facebook.com/plugins/like.php?href=<%= encodeURI(document.URL) %>&amp;send=false&amp;layout=button_count&amp;width=200&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=40" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:200px; height:40px;" allowTransparency="true"></iframe>
+        </div>
         
-        <a href="#question/22">Back</a>
+        <div class="test-share-twitter">
+          <a href="//twitter.com/share" class="twitter-share-button" data-url="<%= document.URL %>" data-text="I got <%= counts.totalCorrect %> of <%= counts.totalCount %> correct on the sample GRAD test from @MinnPost. Take the test here: <%= document.URL %>" data-size="large" data-count="none" data-dnt="true">Tweet</a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        </div>
+
       </div>
     </script>
     
@@ -419,7 +443,9 @@
           
           <div class="question-navigation">
             <input class="navigation-back" type="submit" value="Submit and show answer" />
-            <input class="navigation-next" type="submit" value="Next question" />
+            <%  if (parseInt(question) != limit) { %>
+              <input class="navigation-next" type="submit" value="Next question" />
+            <% } %>
           </div>
         </form>
       </div>
@@ -513,7 +539,10 @@
           },
           
           render: function() {
-            $(this.el).html(_.template(this.template, this.model.toJSON()));
+            var data = this.model.toJSON();
+            data.limit = this.model.collection.length;
+            
+            $(this.el).html(_.template(this.template, data));
             this.selectQuestion().updateNav();
             MathJax.Hub.Typeset();
             return this;
@@ -585,6 +614,13 @@
             // Render template
             if (!this.rendered) {
               $(this.el).html(_.template(this.template, {}));
+            
+              // Fancy box modals
+              $('.calculator').fancybox({ });
+              $('.equations').fancybox({
+                fitToView: false,
+                maxWidth: '90%'
+              });
             }
             $(this.elStatus).html(_.template(this.templateStatus, {
               collection: this.collection.toJSON()
@@ -594,12 +630,13 @@
             $('.test-total-correct').html(this.collection.counts.totalCorrect);
             $('.test-total-total').html(this.collection.counts.totalCount);
             
-            // Fancy box modals
-            $('.calculator').fancybox({ });
-            $('.equations').fancybox({
-              fitToView: false,
-              maxWidth: '90%'
-            });
+            // Is the test done?
+            if (this.collection.counts.totalUnanswered == 0) {
+              $.fancybox(_.template(this.templateFinish, {
+                collection: this.collection.toJSON(),
+                counts: this.collection.counts
+              }));
+            }
             
             this.rendered = true;
             return this;
@@ -652,8 +689,12 @@
             }
             
             // Handle bad values
-            if (parseInt(question) <= 0 || parseInt(question) > this.test.length) {
+            if (parseInt(question) <= 0) {
               this.navigate('/start', { trigger: true, replace: true });
+              return;
+            }
+            if (parseInt(question) > this.test.length) {
+              this.navigate('/question/' + this.test.length, { trigger: true, replace: true });
               return;
             }
             
