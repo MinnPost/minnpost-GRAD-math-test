@@ -24,7 +24,6 @@
   <!--[if IE]>
       <link rel="stylesheet" href="http://www.minnpost.com/sites/default/themes/derma/inc/css/ie.css?n" type="text/css">
   <![endif]-->
-    <script type="text/javascript" src="http://www.minnpost.com/sites/default/files/js/js_ecc28eff7a7d5d5580a845c7f68983c9.js"></script>
     
 
 </head>
@@ -91,8 +90,10 @@
       .test-total-tools .test-helpers-label {
         font-weight: bold;
         padding-right: .5em;
-        text-transform: uppercase;
         font-family: NimbusSanNovConD,Helvetica,Arial,Geneva,sans-serif;
+      }
+      .test-total-tools .test-total-label {
+        text-transform: uppercase;
       }
       .test-total-tools .test-total {
         padding-right: 3em;
@@ -273,14 +274,33 @@
           padding: 1em;
           margin: 1em 0 2em 0;
         }
+        .test-total-tools .test-helpers,
+        .test-total-tools .test-helpers-label {
+          display: none;
+        }
+        .test-status a.correct {
+          background-color: #35E425;
+          color: #FFFFFF:
+        }
+        .test-status a.incorrect {
+          background-color: #E42535;
+          color: #FFFFFF:
+        }
+        .test-status a.selected {
+          font-weight: bold;
+        }
+        
+        .question-answer-form .question-answer-radio.answer-image {
+          float: none;
+        }
+        .question-answer-form .question-answer-radio.answer-image input {
+          float: none;
+        }
       </style>
     <![endif]-->
     
     <!--[if lte IE 8]>
       <style type="text/css">
-        .MathJax {
-          margin-bottom: 1em;
-        }
       </style>
     <![endif]-->
     
@@ -294,9 +314,9 @@
       <!--[if lte IE 7]>
         <div class="ie-upgrade-note">
           <h4>Consider upgrading your browser</h4>
-          <p>Your <strong>Internet Browser</strong> is the application you use to navigate webpages on the internet.  You are currently using an older version of Internet Explorer.  This website and many others will work better if you upgrade your browser.</p>
+          <p>Your <strong>Internet Browser</strong> is the application you use to navigate webpages on the internet.  You are currently using an older version of Internet Explorer.  This application may not be full-featured because you are using such an old browser.</p>
           
-          <p><a href="http://browsehappy.com/" target="_blank">Click here to find out about options for newer browsers</a>.</p>
+          <p><a href="http://browsehappy.com/" target="_blank">Click here to find out about upgrading to a newer browsers</a>.</p>
         
           <p>If you cannot install new applications on your computer (because it is not allowed at work, for example), consider using <a href="http://www.google.com/chromeframe" target="_blank">Google's Chrome Frame</a> for Internet Explorer.</p>
         </div>
@@ -321,7 +341,7 @@
         <div class="test-total-tools">
           <span class="test-total-label">Your score</span>
           <span class="test-total">
-            <span class="test-total-correct"></span> /
+            <span class="test-total-correct"></span>  /
             <span class="test-total-total"></span>
           </span>
           
