@@ -97,7 +97,7 @@
         text-transform: uppercase;
       }
       .test-total-tools .test-total {
-        padding-right: 3em;
+        padding-right: 5em;
         font-weight: bold;
         font-family: NimbusSanNovConD,Helvetica,Arial,Geneva,sans-serif;
       }
@@ -119,8 +119,8 @@
         text-align: center;
       }
       .test-status a {
-        padding: .25em .333333em;
-        margin: 0 .15em;
+        padding: .15em .333333em;
+        margin: .25em .15em;
         border-bottom: 3px solid transparent;
         text-align: center;
         font-family: NimbusSanNovConD,Helvetica,Arial,Geneva,sans-serif;
@@ -139,7 +139,7 @@
         color: #1A1818;
       }
       
-      .question-image {
+      #minnpost-GRAD-math-test .question-image {
         max-width: 40%;
         float: left;
         margin: 0 1em 1em 0;
@@ -198,11 +198,12 @@
         text-align: right;
       }
       .question-navigation input,
-      .question-navigation a {
+      .question-navigation a,
+      .navigation-start {
         background-color: #2595E4;
         color: #FFFFFF;
         padding: .3333em .6666em;
-        margin: 0 1em 0 0;
+        margin: 0 1em 1em 0;
         border: none;
         -moz-border-radius: 3px;
         -webkit-border-radius: 3px;
@@ -212,6 +213,13 @@
       .question-navigation.unanswered input.navigation-next {
         opacity: .7;
         filter: alpha(opacity = 70);
+      }
+      .navigation-start-container {
+        margin: 2.5em 0 1em 0;
+        text-align: center;
+      }
+      .navigation-start {
+        font-size: 2em;
       }
       
       .question .answer-correct,
@@ -265,7 +273,48 @@
       /**
        * Responsive creen size styles
        */
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 570px) {
+        .test-total-tools .test-total-container {
+          display: block;
+          margin-bottom: .5em;
+        }
+        .test-total-tools .test-total {
+          padding-right: 0;
+        }
+        
+        #minnpost-GRAD-math-test .question-image {
+          max-width: 100%;
+        }
+      }
+      
+      @media screen and (max-width: 840px) {
+        .test-status a {
+          font-size: 15px;
+          width: 10px;
+          height: 10px;
+          padding: 0;
+          margin: 0;
+        }
+        .test-status a.test-status-question {
+          border: 1px solid transparent;
+          font-size: 0;
+          background-color: #BCBCBC;
+          display: inline-block;
+          zoom:1;
+          *display:inline;
+          -moz-border-radius: 1px;
+          -webkit-border-radius: 1px;
+          border-radius: 1px;
+        }
+        .test-status a.test-status-question.correct {
+          background-color: #35E425; 
+        }
+        .test-status a.test-status-question.incorrect {
+          background-color: #E42535;
+        }
+        .test-status a.test-status-question.selected {
+          border-color: #1A1818;
+        }
       }
     </style>
     
@@ -343,13 +392,14 @@
     <script id="template-test-container" type="text/template">
       <div class="test-container">
         <div class="test-total-tools">
-          <span class="test-total-label">Your score</span>
-          <span class="test-total">
-            <span class="test-total-correct"></span>  /
-            <span class="test-total-total"></span>
+          <span class="test-total-container">
+            <span class="test-total-label">Your score</span>
+            <span class="test-total">
+              <span class="test-total-correct"></span>  /
+              <span class="test-total-total"></span>
+            </span>
           </span>
           
-          <span class="test-helpers-label">Study aids</span>
           <span class="test-helpers">
             <a href="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/MathFormulaSheet_GRAD_acc.png" class="equations" title="Equation sheet as provided on the sample GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_1050.png" alt="Drafting icon" />Formula sheet</a>
           <a href="https://mnpt.tds.airast.org/student/Scripts/Calculator/TDSCalculator.aspx?mode=Scientific,Graphing" data-fancybox-type="iframe" class="calculator" title="Graphing and scientific calculator provided for the online GRAD test.  Note that this is NOT designed by MinnPost and may not work in certain browsers."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_804.png" alt="Calculator icon" />Calculator</a>
@@ -369,7 +419,7 @@
           <% if (!_.isUndefined(collection[c]) && !_.isUndefined(collection[c].question)) { %>
             <% var correctClass= (_.isUndefined(collection[c].correct)) ? 'unanswered' :
               ((collection[c].correct == true) ? 'correct' : 'incorrect'); %>
-            <a class="<%= correctClass %> question-<%= collection[c].question %>" href="#question/<%= collection[c].question %>"><%= collection[c].question %></a>
+            <a class="<%= correctClass %> question-<%= collection[c].question %> test-status-question" href="#question/<%= collection[c].question %>"><%= collection[c].question %></a>
           <% } %>
         <% } %>
         
@@ -391,8 +441,8 @@
           <li>Use the graphing calculator <a href="https://mnpt.tds.airast.org/student/Scripts/Calculator/TDSCalculator.aspx?mode=Scientific,Graphing" data-fancybox-type="iframe" class="calculator" title="Graphing and scientific calculator provided for the online GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_804.png" alt="Calculator icon" /></a> to help with computation.</li>
         </ul>
       
-        <div class="question-navigation">
-          <a href="#question/1">Start!</a>
+        <div class="navigation-start-container">
+          <a class="navigation-start" href="#question/1">Start!</a>
         </div>
       </div>
     </script>
@@ -413,7 +463,7 @@
         </div>
         
         <div class="test-share-twitter">
-          <a href="//twitter.com/share" class="twitter-share-button" data-url="<%= document.URL %>" data-text="I got <%= counts.totalCorrect %> of <%= counts.totalCount %> correct on the sample GRAD test from @MinnPost. Take the test here: <%= document.URL %>" data-size="large" data-count="none" data-dnt="true">Tweet</a>
+          <a href="//twitter.com/share" class="twitter-share-button" data-text="I got <%= counts.totalCorrect %> of <%= counts.totalCount %> correct on the sample GRAD test from @MinnPost.  Take the test here: <%= window.location.href.replace(window.location.hash, '') %>" data-size="large" data-dnt="true">Tweet</a>
           <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
         </div>
 
@@ -720,6 +770,7 @@
           },
         
           startTest: function() {
+            this.started = this.started || true;
             this.currentQuestion = undefined;
             this.testView.renderStart();
           },
