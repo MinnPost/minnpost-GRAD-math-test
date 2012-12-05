@@ -438,7 +438,7 @@
           <li>There is no time limit.</li>
           <li>We do not save your results, so don't close the page until you are done.</li>
           <li>Use the formula sheet <a href="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/MathFormulaSheet_GRAD_acc.png" class="equations" title="Equation sheet as provided on the sample GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_1050.png" alt="Drafting icon" /></a> for help with various equations.</li>
-          <li>Use the graphing calculator <a href="https://mnpt.tds.airast.org/student/Scripts/Calculator/TDSCalculator.aspx?mode=Scientific,Graphing" data-fancybox-type="iframe" class="calculator" title="Graphing and scientific calculator provided for the online GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_804.png" alt="Calculator icon" /></a> to help with computation.</li>
+          <li>Use the graphing calculator <a href="https://mnpt.tds.airast.org/student/Scripts/Calculator/TDSCalculator.aspx?mode=Scientific,Graphing" target="_blank" data-fancybox-type="iframe" class="calculator" title="Graphing and scientific calculator provided for the online GRAD test."><img src="https://s3.amazonaws.com/data.minnpost/projects/minnpost-GRAD-math-test/images/noun_project_804.png" alt="Calculator icon" /></a> to help with computation.</li>
         </ul>
       
         <div class="navigation-start-container">
@@ -710,10 +710,16 @@
               $(this.el).html(_.template(this.template, {}));
             
               // Fancy box modals
+              /*
               $('.calculator').fancybox({ });
               $('.equations').fancybox({
                 fitToView: false,
                 maxWidth: '90%'
+              });
+              */
+              $('.calculator, .equations').click(function(e) {
+                e.preventDefault();
+                var popupWindow = window.open($(this).attr('href'), 'popup-window-' + $(this).attr('class'), 'height=700,width=800,left=10,top=10,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes');
               });
             }
             $(this.elStatus).html(_.template(this.templateStatus, {
