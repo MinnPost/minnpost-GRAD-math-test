@@ -378,7 +378,11 @@
       <div id="application-container" class="clear-block">
       </div>
       
-      <p class="footnote">Minnesota Graduation-Required Assessments for Diploma (GRAD) sample test provided by <a href="http://www.mnstateassessments.org/itemsamplers.html#GRADsamplers" target="_blank">MN Assessment portal</a>.  2012 MN GRAD results from the <a href="http://education.state.mn.us/MDE/SchSup/TestAdmin/MNTests/TechRep/index.html" target="_blank">Minnesota Department of Education</a>.  <a href="http://thenounproject.com/noun/calculator/#icon-No804" target="_blank">Calculator</a> designed by <a href="http://thenounproject.com/iconify" target="_blank">Scott Lewis</a> from The Noun Project</p>
+      <p class="footnote">Minnesota Graduation-Required Assessments for Diploma (GRAD) sample test provided by <a href="http://www.mnstateassessments.org/itemsamplers.html#GRADsamplers" target="_blank">MN Assessment portal</a>.  2012 MN GRAD results from the <a href="http://education.state.mn.us/MDE/SchSup/TestAdmin/MNTests/TechRep/index.html" target="_blank">Minnesota Department of Education</a>.  <a href="http://thenounproject.com/noun/calculator/#icon-No804" target="_blank">Calculator</a> designed by <a href="http://thenounproject.com/iconify" target="_blank">Scott Lewis</a> from The Noun Project.
+      <br />
+      <br />
+      Note: An earlier version of this test showed an incorrect answer for question 19. The answer has been corrected.
+      </p>
     </div>
     
     
@@ -463,8 +467,7 @@
         </div>
         
         <div class="test-share-twitter">
-          <a href="//twitter.com/share" class="twitter-share-button" data-text="I got <%= counts.totalCorrect %> of <%= counts.totalCount %> correct on the sample GRAD test from @MinnPost.  Take the test here: <%= window.location.href.replace(window.location.hash, '') %>" data-size="large" data-dnt="true">Tweet</a>
-          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+          <a href="//twitter.com/share" class="twitter-share-button" data-text="I got <%= counts.totalCorrect %> of <%= counts.totalCount %> correct on the sample GRAD test from @MinnPost." data-size="large" data-dnt="true">Tweet</a>
         </div>
 
       </div>
@@ -552,6 +555,7 @@
     <script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/backbone-0.9.2/backbone-min.js"></script>
     <script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/fancybox-2.1.2/jquerycustom.fancybox.pack.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 
     
     <script type="text/javascript">
@@ -732,10 +736,16 @@
             
             // Is the test done?
             if (this.collection.counts.totalUnanswered == 0) {
-              $.fancybox(_.template(this.templateFinish, {
-                collection: this.collection.toJSON(),
-                counts: this.collection.counts
-              }));
+              $.fancybox({
+                content: _.template(this.templateFinish, {
+                  collection: this.collection.toJSON(),
+                  counts: this.collection.counts
+                }),
+                afterShow: function() {
+                  // Handle twitter button
+                  twttr.widgets.load();
+                }
+              });
             }
             
             this.rendered = true;
